@@ -1,0 +1,180 @@
+
+test.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text.init:
+
+80000000 <_start>:
+80000000:	a809                	j	80000012 <main>
+
+80000002 <trap_vector>:
+80000002:	34202f73          	csrr	t5,mcause
+80000006:	0001                	nop
+80000008:	0001                	nop
+8000000a:	0001                	nop
+8000000c:	0001                	nop
+8000000e:	0001                	nop
+80000010:	a8a1                	j	80000068 <write_tohost>
+
+80000012 <main>:
+80000012:	40000313          	li	t1,1024
+80000016:	30032073          	csrs	mstatus,t1
+8000001a:	6319                	lui	t1,0x6
+8000001c:	30032073          	csrs	mstatus,t1
+80000020:	00002697          	auipc	a3,0x2
+80000024:	fe068693          	addi	a3,a3,-32 # 80002000 <a>
+80000028:	6288                	flw	fa0,0(a3)
+8000002a:	00002597          	auipc	a1,0x2
+8000002e:	fda58593          	addi	a1,a1,-38 # 80002004 <x>
+80000032:	00002617          	auipc	a2,0x2
+80000036:	ff260613          	addi	a2,a2,-14 # 80002024 <y>
+8000003a:	2011                	jal	8000003e <saxpy>
+8000003c:	a035                	j	80000068 <write_tohost>
+
+8000003e <saxpy>:
+8000003e:	02100513          	li	a0,33
+80000042:	0d057757          	vsetvli	a4,a0,e32,m1,ta,ma
+
+80000046 <loop>:
+80000046:	0205e007          	vle32.v	v0,(a1)
+8000004a:	02066407          	vle32.v	v8,(a2)
+8000004e:	b2055457          	vfmacc.vf	v8,fa0,v0
+80000052:	02066427          	vse32.v	v8,(a2)
+80000056:	00271793          	slli	a5,a4,0x2
+8000005a:	95be                	add	a1,a1,a5
+8000005c:	963e                	add	a2,a2,a5
+8000005e:	8d19                	sub	a0,a0,a4
+80000060:	fea043e3          	bgtz	a0,80000046 <loop>
+80000064:	8082                	ret
+80000066:	0001                	nop
+
+80000068 <write_tohost>:
+80000068:	4185                	li	gp,1
+8000006a:	00001f17          	auipc	t5,0x1
+8000006e:	f83f2b23          	sw	gp,-106(t5) # 80001000 <tohost>
+80000072:	bfdd                	j	80000068 <write_tohost>
+	...
+
+Disassembly of section .tohost:
+
+80001000 <tohost>:
+	...
+
+80001040 <fromhost>:
+	...
+
+Disassembly of section .data:
+
+80002000 <a>:
+80002000:	0000                	unimp
+80002002:	4000                	lw	s0,0(s0)
+
+80002004 <x>:
+80002004:	0000                	unimp
+80002006:	3f80                	fld	fs0,56(a5)
+80002008:	0000                	unimp
+8000200a:	4000                	lw	s0,0(s0)
+8000200c:	0000                	unimp
+8000200e:	4040                	lw	s0,4(s0)
+80002010:	0000                	unimp
+80002012:	4080                	lw	s0,0(s1)
+80002014:	0000                	unimp
+80002016:	40a0                	lw	s0,64(s1)
+80002018:	0000                	unimp
+8000201a:	40c0                	lw	s0,4(s1)
+8000201c:	0000                	unimp
+8000201e:	40e0                	lw	s0,68(s1)
+80002020:	0000                	unimp
+80002022:	4100                	lw	s0,0(a0)
+
+80002024 <y>:
+80002024:	0000                	unimp
+80002026:	3f00                	fld	fs0,56(a4)
+80002028:	0000                	unimp
+8000202a:	3f80                	fld	fs0,56(a5)
+8000202c:	0000                	unimp
+8000202e:	3fc0                	fld	fs0,184(a5)
+80002030:	0000                	unimp
+80002032:	4000                	lw	s0,0(s0)
+80002034:	0000                	unimp
+80002036:	4020                	lw	s0,64(s0)
+80002038:	0000                	unimp
+8000203a:	4040                	lw	s0,4(s0)
+8000203c:	0000                	unimp
+8000203e:	4060                	lw	s0,68(s0)
+80002040:	0000                	unimp
+80002042:	4080                	lw	s0,0(s1)
+	...
+
+Disassembly of section .riscv.attributes:
+
+00000000 <.riscv.attributes>:
+   0:	aa41                	j	190 <_start-0x7ffffe70>
+   2:	0000                	unimp
+   4:	7200                	flw	fs0,32(a2)
+   6:	7369                	lui	t1,0xffffa
+   8:	01007663          	bgeu	zero,a6,14 <_start-0x7fffffec>
+   c:	00a0                	addi	s0,sp,72
+   e:	0000                	unimp
+  10:	7205                	lui	tp,0xfffe1
+  12:	3376                	fld	ft6,376(sp)
+  14:	6932                	flw	fs2,12(sp)
+  16:	7032                	flw	ft0,44(sp)
+  18:	5f31                	li	t5,-20
+  1a:	326d                	jal	fffff9c4 <_end+0x7fffd974>
+  1c:	3070                	fld	fa2,224(s0)
+  1e:	615f 7032 5f31      	.insn	6, 0x5f317032615f
+  24:	3266                	fld	ft4,120(sp)
+  26:	3270                	fld	fa2,224(a2)
+  28:	645f 7032 5f32      	.insn	6, 0x5f327032645f
+  2e:	30703263          	.insn	4, 0x30703263
+  32:	765f 7031 5f30      	.insn	6, 0x5f307031765f
+  38:	697a                	flw	fs2,156(sp)
+  3a:	32727363          	bgeu	tp,t2,360 <_start-0x7ffffca0>
+  3e:	3070                	fld	fa2,224(s0)
+  40:	7a5f 6669 6e65      	.insn	6, 0x6e6566697a5f
+  46:	32696563          	bltu	s2,t1,370 <_start-0x7ffffc90>
+  4a:	3070                	fld	fa2,224(s0)
+  4c:	7a5f 6d6d 6c75      	.insn	6, 0x6c756d6d7a5f
+  52:	7031                	c.lui	zero,0xfffec
+  54:	5f30                	lw	a2,120(a4)
+  56:	767a                	flw	fa2,188(sp)
+  58:	3365                	jal	fffffe00 <_end+0x7fffddb0>
+  5a:	6632                	flw	fa2,12(sp)
+  5c:	7031                	c.lui	zero,0xfffec
+  5e:	5f30                	lw	a2,120(a4)
+  60:	767a                	flw	fa2,188(sp)
+  62:	3365                	jal	fffffe0a <_end+0x7fffddba>
+  64:	7832                	flw	fa6,44(sp)
+  66:	7031                	c.lui	zero,0xfffec
+  68:	5f30                	lw	a2,120(a4)
+  6a:	767a                	flw	fa2,188(sp)
+  6c:	3665                	jal	fffffc14 <_end+0x7fffdbc4>
+  6e:	6434                	flw	fa3,72(s0)
+  70:	7031                	c.lui	zero,0xfffec
+  72:	5f30                	lw	a2,120(a4)
+  74:	767a                	flw	fa2,188(sp)
+  76:	3665                	jal	fffffc1e <_end+0x7fffdbce>
+  78:	6634                	flw	fa3,72(a2)
+  7a:	7031                	c.lui	zero,0xfffec
+  7c:	5f30                	lw	a2,120(a4)
+  7e:	767a                	flw	fa2,188(sp)
+  80:	3665                	jal	fffffc28 <_end+0x7fffdbd8>
+  82:	7834                	flw	fa3,112(s0)
+  84:	7031                	c.lui	zero,0xfffec
+  86:	5f30                	lw	a2,120(a4)
+  88:	767a                	flw	fa2,188(sp)
+  8a:	316c                	fld	fa1,224(a0)
+  8c:	3832                	fld	fa6,296(sp)
+  8e:	3162                	fld	ft2,56(sp)
+  90:	3070                	fld	fa2,224(s0)
+  92:	7a5f 6c76 3233      	.insn	6, 0x32336c767a5f
+  98:	3162                	fld	ft2,56(sp)
+  9a:	3070                	fld	fa2,224(s0)
+  9c:	7a5f 6c76 3436      	.insn	6, 0x34366c767a5f
+  a2:	3162                	fld	ft2,56(sp)
+  a4:	3070                	fld	fa2,224(s0)
+  a6:	0800                	addi	s0,sp,16
+  a8:	0a01                	addi	s4,s4,0
+  aa:	Address 0xaa is out of bounds.
+
