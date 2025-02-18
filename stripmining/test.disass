@@ -1,0 +1,164 @@
+
+test.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text.init:
+
+80000000 <_start>:
+80000000:	a809                	j	80000012 <main>
+
+80000002 <trap_vector>:
+80000002:	34202f73          	csrr	t5,mcause
+80000006:	0001                	nop
+80000008:	0001                	nop
+8000000a:	0001                	nop
+8000000c:	0001                	nop
+8000000e:	0001                	nop
+80000010:	a0a1                	j	80000058 <write_tohost>
+
+80000012 <main>:
+80000012:	40000313          	li	t1,1024
+80000016:	30032073          	csrs	mstatus,t1
+8000001a:	00002297          	auipc	t0,0x2
+8000001e:	02628293          	addi	t0,t0,38 # 80002040 <data_mask>
+80000022:	00002317          	auipc	t1,0x2
+80000026:	fde30313          	addi	t1,t1,-34 # 80002000 <data_one>
+8000002a:	00002397          	auipc	t2,0x2
+8000002e:	ff638393          	addi	t2,t2,-10 # 80002020 <data_two>
+80000032:	03200513          	li	a0,50
+
+80000036 <loop>:
+80000036:	0d0575d7          	vsetvli	a1,a0,e32,m1,ta,ma
+8000003a:	0202e007          	vle32.v	v0,(t0)
+8000003e:	02036087          	vle32.v	v1,(t1)
+80000042:	0203e107          	vle32.v	v2,(t2)
+80000046:	021101d7          	vadd.vv	v3,v1,v2
+8000004a:	00110257          	vadd.vv	v4,v1,v2,v0.t
+8000004e:	8d0d                	sub	a0,a0,a1
+80000050:	fea043e3          	bgtz	a0,80000036 <loop>
+80000054:	a011                	j	80000058 <write_tohost>
+80000056:	0001                	nop
+
+80000058 <write_tohost>:
+80000058:	4185                	li	gp,1
+8000005a:	00001f17          	auipc	t5,0x1
+8000005e:	fa3f2323          	sw	gp,-90(t5) # 80001000 <tohost>
+80000062:	bfdd                	j	80000058 <write_tohost>
+	...
+
+Disassembly of section .tohost:
+
+80001000 <tohost>:
+	...
+
+80001040 <fromhost>:
+	...
+
+Disassembly of section .data:
+
+80002000 <data_one>:
+80002000:	febaceef          	jal	t4,7ffaefea <_start-0x51016>
+80002004:	deabdeef          	jal	t4,7ffbf5ee <_start-0x40a12>
+80002008:	cafebeef          	jal	t4,7ffedcb6 <_start-0x1234a>
+8000200c:	ffff                	.insn	2, 0xffff
+8000200e:	ffff                	.insn	2, 0xffff
+80002010:	1000                	addi	s0,sp,32
+80002012:	0000                	unimp
+80002014:	0010                	.insn	2, 0x0010
+80002016:	0100                	addi	s0,sp,128
+80002018:	0000                	unimp
+8000201a:	1000                	addi	s0,sp,32
+8000201c:	8601                	c.srai64	a2
+8000201e:	          	.insn	4, 0xbeef9007
+
+80002020 <data_two>:
+80002020:	cafebeef          	jal	t4,7ffedcce <_start-0x12332>
+80002024:	deadbeef          	jal	t4,7ffdd60e <_start-0x229f2>
+80002028:	ef12                	fsw	ft4,156(sp)
+8000202a:	abcd                	j	8000261c <_end+0x5cc>
+8000202c:	345345ab          	.insn	4, 0x345345ab
+80002030:	abcd                	j	80002622 <_end+0x5d2>
+80002032:	abcd                	j	80002624 <_end+0x5d4>
+80002034:	9876                	add	a6,a6,t4
+80002036:	6789                	lui	a5,0x2
+80002038:	1122                	slli	sp,sp,0x28
+8000203a:	1122                	slli	sp,sp,0x28
+8000203c:	feed                	bnez	a3,80002036 <data_two+0x16>
+8000203e:	          	.insn	4, 0x0091ceab
+
+80002040 <data_mask>:
+80002040:	0091                	addi	ra,ra,4
+	...
+
+Disassembly of section .riscv.attributes:
+
+00000000 <.riscv.attributes>:
+   0:	aa41                	j	190 <_start-0x7ffffe70>
+   2:	0000                	unimp
+   4:	7200                	flw	fs0,32(a2)
+   6:	7369                	lui	t1,0xffffa
+   8:	01007663          	bgeu	zero,a6,14 <_start-0x7fffffec>
+   c:	00a0                	addi	s0,sp,72
+   e:	0000                	unimp
+  10:	7205                	lui	tp,0xfffe1
+  12:	3376                	fld	ft6,376(sp)
+  14:	6932                	flw	fs2,12(sp)
+  16:	7032                	flw	ft0,44(sp)
+  18:	5f31                	li	t5,-20
+  1a:	326d                	jal	fffff9c4 <_end+0x7fffd974>
+  1c:	3070                	fld	fa2,224(s0)
+  1e:	615f 7032 5f31      	.insn	6, 0x5f317032615f
+  24:	3266                	fld	ft4,120(sp)
+  26:	3270                	fld	fa2,224(a2)
+  28:	645f 7032 5f32      	.insn	6, 0x5f327032645f
+  2e:	30703263          	.insn	4, 0x30703263
+  32:	765f 7031 5f30      	.insn	6, 0x5f307031765f
+  38:	697a                	flw	fs2,156(sp)
+  3a:	32727363          	bgeu	tp,t2,360 <_start-0x7ffffca0>
+  3e:	3070                	fld	fa2,224(s0)
+  40:	7a5f 6669 6e65      	.insn	6, 0x6e6566697a5f
+  46:	32696563          	bltu	s2,t1,370 <_start-0x7ffffc90>
+  4a:	3070                	fld	fa2,224(s0)
+  4c:	7a5f 6d6d 6c75      	.insn	6, 0x6c756d6d7a5f
+  52:	7031                	c.lui	zero,0xfffec
+  54:	5f30                	lw	a2,120(a4)
+  56:	767a                	flw	fa2,188(sp)
+  58:	3365                	jal	fffffe00 <_end+0x7fffddb0>
+  5a:	6632                	flw	fa2,12(sp)
+  5c:	7031                	c.lui	zero,0xfffec
+  5e:	5f30                	lw	a2,120(a4)
+  60:	767a                	flw	fa2,188(sp)
+  62:	3365                	jal	fffffe0a <_end+0x7fffddba>
+  64:	7832                	flw	fa6,44(sp)
+  66:	7031                	c.lui	zero,0xfffec
+  68:	5f30                	lw	a2,120(a4)
+  6a:	767a                	flw	fa2,188(sp)
+  6c:	3665                	jal	fffffc14 <_end+0x7fffdbc4>
+  6e:	6434                	flw	fa3,72(s0)
+  70:	7031                	c.lui	zero,0xfffec
+  72:	5f30                	lw	a2,120(a4)
+  74:	767a                	flw	fa2,188(sp)
+  76:	3665                	jal	fffffc1e <_end+0x7fffdbce>
+  78:	6634                	flw	fa3,72(a2)
+  7a:	7031                	c.lui	zero,0xfffec
+  7c:	5f30                	lw	a2,120(a4)
+  7e:	767a                	flw	fa2,188(sp)
+  80:	3665                	jal	fffffc28 <_end+0x7fffdbd8>
+  82:	7834                	flw	fa3,112(s0)
+  84:	7031                	c.lui	zero,0xfffec
+  86:	5f30                	lw	a2,120(a4)
+  88:	767a                	flw	fa2,188(sp)
+  8a:	316c                	fld	fa1,224(a0)
+  8c:	3832                	fld	fa6,296(sp)
+  8e:	3162                	fld	ft2,56(sp)
+  90:	3070                	fld	fa2,224(s0)
+  92:	7a5f 6c76 3233      	.insn	6, 0x32336c767a5f
+  98:	3162                	fld	ft2,56(sp)
+  9a:	3070                	fld	fa2,224(s0)
+  9c:	7a5f 6c76 3436      	.insn	6, 0x34366c767a5f
+  a2:	3162                	fld	ft2,56(sp)
+  a4:	3070                	fld	fa2,224(s0)
+  a6:	0800                	addi	s0,sp,16
+  a8:	0a01                	addi	s4,s4,0
+  aa:	Address 0xaa is out of bounds.
+
