@@ -1,0 +1,208 @@
+
+test.elf:     file format elf64-littleriscv
+
+
+Disassembly of section .text.init:
+
+0000000080000000 <_start>:
+    80000000:	a809                	j	80000012 <main>
+
+0000000080000002 <trap_vector>:
+    80000002:	34202f73          	csrr	t5,mcause
+    80000006:	0001                	nop
+    80000008:	0001                	nop
+    8000000a:	0001                	nop
+    8000000c:	0001                	nop
+    8000000e:	0001                	nop
+    80000010:	a8c1                	j	800000e0 <write_tohost>
+
+0000000080000012 <main>:
+    80000012:	40000313          	li	t1,1024
+    80000016:	30032073          	csrs	mstatus,t1
+    8000001a:	00002297          	auipc	t0,0x2
+    8000001e:	06228293          	add	t0,t0,98 # 8000207c <data_mask>
+    80000022:	00002317          	auipc	t1,0x2
+    80000026:	fde30313          	add	t1,t1,-34 # 80002000 <data_one>
+    8000002a:	00002397          	auipc	t2,0x2
+    8000002e:	ff238393          	add	t2,t2,-14 # 8000201c <data_two>
+    80000032:	4521                	li	a0,8
+    80000034:	0d0575d7          	vsetvli	a1,a0,e32,m1,ta,ma
+    80000038:	0202e007          	vle32.v	v0,(t0)
+    8000003c:	02036087          	vle32.v	v1,(t1)
+    80000040:	0203e107          	vle32.v	v2,(t2)
+    80000044:	00110257          	vadd.vv	v4,v1,v2,v0.t
+    80000048:	0202e007          	vle32.v	v0,(t0)
+    8000004c:	02035087          	vle16.v	v1,(t1)
+    80000050:	0203d107          	vle16.v	v2,(t2)
+    80000054:	022081d7          	vadd.vv	v3,v2,v1
+    80000058:	0a2081d7          	vsub.vv	v3,v2,v1
+    8000005c:	4295                	li	t0,5
+    8000005e:	0e22c1d7          	vrsub.vx	v3,v2,t0
+    80000062:	0e2041d7          	vneg.v	v3,v2
+    80000066:	00002317          	auipc	t1,0x2
+    8000006a:	fd630313          	add	t1,t1,-42 # 8000203c <data_three>
+    8000006e:	00002397          	auipc	t2,0x2
+    80000072:	fee38393          	add	t2,t2,-18 # 8000205c <data_four>
+    80000076:	02035087          	vle16.v	v1,(t1)
+    8000007a:	0203d107          	vle16.v	v2,(t2)
+    8000007e:	402081d7          	vadc.vvm	v3,v2,v1,v0
+    80000082:	462081d7          	vmadc.vv	v3,v2,v1
+    80000086:	961101d7          	vsll.vv	v3,v1,v2
+    8000008a:	b220b1d7          	vnsrl.wi	v3,v2,1
+    8000008e:	b2110257          	vnsrl.wv	v4,v1,v2
+    80000092:	0c8072d7          	vsetvli	t0,zero,e16,m1,ta,ma
+    80000096:	02035087          	vle16.v	v1,(t1)
+    8000009a:	0203d107          	vle16.v	v2,(t2)
+    8000009e:	c220a1d7          	vwaddu.vv	v3,v2,v1
+    800000a2:	c222e1d7          	vwaddu.vx	v3,v2,t0
+    800000a6:	ca20a1d7          	vwsubu.vv	v3,v2,v1
+    800000aa:	ca22e1d7          	vwsubu.vx	v3,v2,t0
+    800000ae:	c620a1d7          	vwadd.vv	v3,v2,v1
+    800000b2:	c622e1d7          	vwadd.vx	v3,v2,t0
+    800000b6:	ce20a1d7          	vwsub.vv	v3,v2,v1
+    800000ba:	ce22e1d7          	vwsub.vx	v3,v2,t0
+    800000be:	d220a1d7          	vwaddu.wv	v3,v2,v1
+    800000c2:	d222e1d7          	vwaddu.wx	v3,v2,t0
+    800000c6:	da20a1d7          	vwsubu.wv	v3,v2,v1
+    800000ca:	da22e1d7          	vwsubu.wx	v3,v2,t0
+    800000ce:	d620a1d7          	vwadd.wv	v3,v2,v1
+    800000d2:	d622e1d7          	vwadd.wx	v3,v2,t0
+    800000d6:	de20a1d7          	vwsub.wv	v3,v2,v1
+    800000da:	de22e1d7          	vwsub.wx	v3,v2,t0
+    800000de:	a009                	j	800000e0 <write_tohost>
+
+00000000800000e0 <write_tohost>:
+    800000e0:	4185                	li	gp,1
+    800000e2:	00001f17          	auipc	t5,0x1
+    800000e6:	f03f2f23          	sw	gp,-226(t5) # 80001000 <tohost>
+    800000ea:	bfdd                	j	800000e0 <write_tohost>
+	...
+
+Disassembly of section .tohost:
+
+0000000080001000 <tohost>:
+	...
+
+0000000080001040 <fromhost>:
+	...
+
+Disassembly of section .data:
+
+0000000080002000 <data_one>:
+    80002000:	febaceef          	jal	t4,7ffaefea <_start-0x51016>
+    80002004:	deabdeef          	jal	t4,7ffbf5ee <_start-0x40a12>
+    80002008:	cafebeef          	jal	t4,7ffedcb6 <_start-0x1234a>
+    8000200c:	ffff                	.2byte	0xffff
+    8000200e:	ffff                	.2byte	0xffff
+    80002010:	aaaa                	fsd	fa0,336(sp)
+    80002012:	aaaa                	fsd	fa0,336(sp)
+    80002014:	abcabcab          	.4byte	0xabcabcab
+    80002018:	deadfeab          	.4byte	0xdeadfeab
+
+000000008000201c <data_two>:
+    8000201c:	cafebeef          	jal	t4,7ffedcca <_start-0x12336>
+    80002020:	deadbeef          	jal	t4,7ffdd60a <_start-0x229f6>
+    80002024:	ef12                	sd	tp,408(sp)
+    80002026:	abcd                	j	80002618 <_end+0x598>
+    80002028:	345345ab          	.4byte	0x345345ab
+    8000202c:	abcd                	j	8000261e <_end+0x59e>
+    8000202e:	abcd                	j	80002620 <_end+0x5a0>
+    80002030:	9876                	add	a6,a6,t4
+    80002032:	6789                	lui	a5,0x2
+    80002034:	1122                	sll	sp,sp,0x28
+    80002036:	1122                	sll	sp,sp,0x28
+    80002038:	feed                	bnez	a3,80002032 <data_two+0x16>
+    8000203a:	          	.4byte	0x1ceab
+
+000000008000203c <data_three>:
+    8000203c:	0001                	nop
+    8000203e:	0000                	unimp
+    80002040:	00000007          	vle8.v	v0,(zero),v0.t
+    80002044:	0001                	nop
+    80002046:	0000                	unimp
+    80002048:	0002                	c.slli64	zero
+    8000204a:	0000                	unimp
+    8000204c:	0006                	c.slli	zero,0x1
+    8000204e:	0000                	unimp
+    80002050:	00000003          	lb	zero,0(zero) # 0 <_start-0x80000000>
+    80002054:	0001                	nop
+    80002056:	0000                	unimp
+    80002058:	0008                	.2byte	0x8
+	...
+
+000000008000205c <data_four>:
+    8000205c:	00001003          	lh	zero,0(zero) # 0 <_start-0x80000000>
+    80002060:	00000007          	vle8.v	v0,(zero),v0.t
+    80002064:	0001                	nop
+    80002066:	0000                	unimp
+    80002068:	0002                	c.slli64	zero
+    8000206a:	0000                	unimp
+    8000206c:	0006                	c.slli	zero,0x1
+    8000206e:	0000                	unimp
+    80002070:	00000003          	lb	zero,0(zero) # 0 <_start-0x80000000>
+    80002074:	0001                	nop
+    80002076:	0000                	unimp
+    80002078:	0008                	.2byte	0x8
+	...
+
+000000008000207c <data_mask>:
+    8000207c:	0091                	add	ra,ra,4
+	...
+
+Disassembly of section .riscv.attributes:
+
+0000000000000000 <.riscv.attributes>:
+   0:	9541                	sra	a0,a0,0x30
+   2:	0000                	unimp
+   4:	7200                	ld	s0,32(a2)
+   6:	7369                	lui	t1,0xffffa
+   8:	01007663          	bgeu	zero,a6,14 <_start-0x7fffffec>
+   c:	0000008b          	.4byte	0x8b
+  10:	7205                	lui	tp,0xfffe1
+  12:	3676                	fld	fa2,376(sp)
+  14:	6934                	ld	a3,80(a0)
+  16:	7032                	.2byte	0x7032
+  18:	5f30                	lw	a2,120(a4)
+  1a:	326d                	addw	tp,tp,-5 # fffffffffffe0ffb <_end+0xffffffff7ffdef7b>
+  1c:	3070                	fld	fa2,224(s0)
+  1e:	615f 7032 5f30      	.byte	0x5f, 0x61, 0x32, 0x70, 0x30, 0x5f
+  24:	3266                	fld	ft4,120(sp)
+  26:	3070                	fld	fa2,224(s0)
+  28:	645f 7032 5f30      	.byte	0x5f, 0x64, 0x32, 0x70, 0x30, 0x5f
+  2e:	30703263          	vmsge.vx	v4,v7,zero,v0.t
+  32:	765f 7031 5f30      	.byte	0x5f, 0x76, 0x31, 0x70, 0x30, 0x5f
+  38:	6d7a                	ld	s10,408(sp)
+  3a:	756d                	lui	a0,0xffffb
+  3c:	316c                	fld	fa1,224(a0)
+  3e:	3070                	fld	fa2,224(s0)
+  40:	7a5f 6576 3233      	.byte	0x5f, 0x7a, 0x76, 0x65, 0x33, 0x32
+  46:	3166                	fld	ft2,120(sp)
+  48:	3070                	fld	fa2,224(s0)
+  4a:	7a5f 6576 3233      	.byte	0x5f, 0x7a, 0x76, 0x65, 0x33, 0x32
+  50:	3178                	fld	fa4,224(a0)
+  52:	3070                	fld	fa2,224(s0)
+  54:	7a5f 6576 3436      	.byte	0x5f, 0x7a, 0x76, 0x65, 0x36, 0x34
+  5a:	3164                	fld	fs1,224(a0)
+  5c:	3070                	fld	fa2,224(s0)
+  5e:	7a5f 6576 3436      	.byte	0x5f, 0x7a, 0x76, 0x65, 0x36, 0x34
+  64:	3166                	fld	ft2,120(sp)
+  66:	3070                	fld	fa2,224(s0)
+  68:	7a5f 6576 3436      	.byte	0x5f, 0x7a, 0x76, 0x65, 0x36, 0x34
+  6e:	3178                	fld	fa4,224(a0)
+  70:	3070                	fld	fa2,224(s0)
+  72:	7a5f 6c76 3231      	.byte	0x5f, 0x7a, 0x76, 0x6c, 0x31, 0x32
+  78:	6238                	ld	a4,64(a2)
+  7a:	7031                	c.lui	zero,0xfffec
+  7c:	5f30                	lw	a2,120(a4)
+  7e:	767a                	ld	a2,440(sp)
+  80:	336c                	fld	fa1,224(a4)
+  82:	6232                	ld	tp,264(sp)
+  84:	7031                	c.lui	zero,0xfffec
+  86:	5f30                	lw	a2,120(a4)
+  88:	767a                	ld	a2,440(sp)
+  8a:	366c                	fld	fa1,232(a2)
+  8c:	6234                	ld	a3,64(a2)
+  8e:	7031                	c.lui	zero,0xfffec
+  90:	0030                	add	a2,sp,8
+  92:	0108                	add	a0,sp,128
+  94:	0b0a                	sll	s6,s6,0x2
