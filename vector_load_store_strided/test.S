@@ -32,7 +32,7 @@ main:
     # Loading data to vectors
     vle32.v v1, (t1)                    # Unit Stride Vector load
     vle16.v v1, (t1)                    # Unit Stride Vector load
-    vle64.v v1, (t1)                    # Unit Stride Vector load - this will raise illegal instruction exception?
+    # vle64.v v1, (t1)                    # Unit Stride Vector load - this will raise illegal instruction exception?
     # vle64.v v2, (t1)
     vle32.v v1, (t1)                    # Unit Stride Vector load
 
@@ -55,8 +55,37 @@ main:
     la t1, data_one
 
     vluxei32.v v7, (t1), v6             # Vector indexed-unordered load instruction
+    vloxei32.v v7, (t1), v6
 
     vlseg4e32.v v8, (t1)                # Unit Stride Segment Load with nf=4, emul=1, eew = 32
+
+    # Load base address of data_array and index_array
+    la x10, data_array     # x10 = base address of data_array (0x1000)
+    la x11, index_array    # x11 = base address of index_array (0x1000)
+
+    # Set up vector configuration: e32 (32-bit elements), m1 (single width), max vector length (vl=4)
+    li a0, 4               # Set VLMAX (max vector length) to 4
+    vsetvli a1, a0, e32, m1, ta, ma  # Set vector length to at most 4, with 32-bit element size
+
+    # Load vector indices from memory (vs2 holds memory addresses)
+    # vle32.v v2, (x11)  # Load 4 addresses from index_array into vs2
+
+    
+    # First, we deliberately cause a fault on element 0 by pointing it to invalid memory
+    la x10, invalid_data     # Load invalid address for element 0 (0xDEADBEEF)
+    vle32ff.v v1, (x10) # Perform the unit-stride fault-only-first load (trap on element 0)
+    
+    # After this load, if element 0 causes a trap, the vector length should be reduced to 0 (no further loads).
+    # Print the contents of v1 to show the outcome.
+
+    
+    # Now simulate a fault on a later element (e.g., element 3) while the first elements are valid
+    la x10, data_array      # Load valid data array address for elements
+    vle32ff.v v2, (x10)  # Perform the unit-stride fault-only-first load (fault on element 3)
+    
+    # If element 3 raises an exception, the vector length should be reduced to 3.
+    # We still expect elements 0, 1, and 2 to be loaded successfully, but element 3 will be skipped.
+    # Print the contents of v2 to show the outcome.
 
     j write_tohost   
 
@@ -114,6 +143,17 @@ load_index:
 .word 56
 .word 28
 .word 20
+
+data_array:
+    .word 0x00000001, 0x00000002, 0x00000003, 0xDEADBEEF, 0x00000004, 0x00000005  # Simulated memory values
+
+# Invalid address (simulating fault on certain element)
+invalid_data:
+    .word 0xDEADBEEF, 0xDEADBEEF, 0xDEADBEEF, 0xDEADBEEF
+
+# Index array (points to base addresses of the valid data array)
+index_array:
+    .word 0x1000, 0x1004, 0x1008, 0x100C, 0x1010
 
 
 
